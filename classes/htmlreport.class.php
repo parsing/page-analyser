@@ -75,6 +75,27 @@ class HtmlReport implements IReport{
         }
     }
 
+    //Returns an array containing the meta tags
+    function metaTags(){
+        //Use DOMDocument to load the source and find meta tags
+        $dom = new DOMDocument();
+        $dom->loadHTML($source);
+
+        //Create an array with the tags and their information
+        $metatags = array();
+        $raw_tags = $dom->getElementsByTagName("meta");
+        foreach($raw_tags as $tag){
+            $name = $tag->getAttribute("name");
+            $content = $tag->getAttribute("content");
+            $httpequiv = $tag->getAttribute("http-equiv");
+            $scheme = $tag->getAttribute("scheme");
+            //Push the tag in the array
+            $newtag = array('name' => $name, 'content' => $content, 'http-equiv' => $httpequiv, 'scheme' => $scheme);
+            $metatags[$newtag['name']] = $newtag; //add a new key with the name of the tag
+        }
+        return $metatags;
+    }
+
     //Returns the contents of the title tag
     function titleTag(){
         return($this->getTags('title'));
