@@ -10,23 +10,15 @@ require_once('urlreport.class.php');
 
 class ServerReport implements IReport{
     private $url;
-    private $urlReport;
-    private $headers;
+    private $source;
 
-    function __construct($url){
-        $this->url = $url;
-
-        //Generate the URL report
-            try{
-                $this->urlReport = new UrlReport($url);
-            }
-            catch(Exception $e){
-                throw $e;
-            }
+    function __construct($url,$source){
+        $this->url = $url;//Page URL
+        $this->source = $source;//Page source
     }
 
 //==============================================================================
-    
+
     function getUrl(){
         return $this->url;
     }
@@ -66,7 +58,7 @@ class ServerReport implements IReport{
         else
             return '';
     }
-    
+
     //Returns the server type (i.e. Apache)
     function serverType(){
         $headers = $this->getHeaders();

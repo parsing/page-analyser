@@ -5,6 +5,6 @@
 
     $report = new SiteReport($url);
 
-    echo $report->getSource();
+    print_r($report->getServerReport()->getHeaders());
 
 ?>

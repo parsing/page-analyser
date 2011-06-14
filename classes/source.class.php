@@ -29,7 +29,7 @@ class Source implements IReport{
         private $source; //The source of the page
 
 
-    function __construct($url=''){
+    function __construct($url){
         //Set the URL to fetch
             $this->setUrl($url);
         
