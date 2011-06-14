@@ -4,7 +4,9 @@
 //Fetches and combines various reports
 
 require_once('classes/source.class.php');
+require_once('classes/htmlreport.class.php');
 require_once('classes/serverreport.class.php');
+
 
 class SiteReport{
     //Regex constants
@@ -13,6 +15,8 @@ class SiteReport{
     //Class variables
         private $source;        //The site's source
         private $serverReport;  //The server report
+        private $htmlReport;  //The server report
+
 
     function __construct($url){
 
@@ -31,7 +35,14 @@ class SiteReport{
             catch(Exception $e){
                 throw $e;//Expect the HTTP response code as the exception code
             }
-            
+
+        //Create a report on the site's source
+            try{
+                $this->htmlReport = new HtmlReport($url,$this->source);
+            }
+            catch(Exception $e){
+                throw $e;//Expect the HTTP response code as the exception code
+            }
     }
     
 
@@ -46,6 +57,11 @@ class SiteReport{
     //Retrieves the server report
     function getServerReport(){
         return $this->serverReport;
+    }
+
+    //Retrieves the HTML report
+    function getHtmlReport(){
+        return $this->htmlReport;
     }
 
 }

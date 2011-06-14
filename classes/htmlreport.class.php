@@ -6,9 +6,8 @@
 
 
 require_once('report.interface.php');
-require_once('urlreport.class.php');
 
-class ServerReport implements IReport{
+class HtmlReport implements IReport{
     private $url;
     private $source;
 
@@ -23,55 +22,63 @@ class ServerReport implements IReport{
         return $this->url;
     }
 
-    function getUrlReport(){
-        return $this->urlReport;
-    }
-
-    public function getHeaders(){
-        if (!isset($this->headers)){
-            $this->headers = get_headers($this->url,true);
-        }
-        return $this->headers;
+    function getSource(){
+        return $this->source;
     }
 
 //==============================================================================
 
-    //Returns true if the server uses caching
-    function cachingEnabled(){
-        $headers = $this->getHeaders();
-        if (isset($headers['Expires']) || isset($headers['Cache-Control'])){
-            return true;
+    //Returns an array with all the occurences of a tag in the source
+    private function getTags($tag){
+            //Use DOMDocument to load the source and find tags
+            $dom = new DOMDocument();
+            $dom->loadHTML($this->source);
+
+            //Create an array with the tags and their information
+            $tags = array();
+            $raw_tags = $dom->getElementsByTagName($tag);
+            foreach($raw_tags as $tag){
+                    $text = $tag->nodeValue;
+                    //Push the tag in the array
+                    array_push($tags, $text);
+            }
+            return $tags;
+    }
+    
+//==============================================================================
+
+    //Returns the doctype
+    function doctype(){
+        if (preg_match("/\<\!doctype[^\>]*\>/i", $this->source,$okay)){
+            return(htmlentities($okay[0]));
         }
         else
-            return false;
+            return false; //Return false for no doctype
     }
 
-    //Returns the page's scripting language (i.e. PHP)
-    function poweredBy(){
-        $headers = $this->getHeaders();
-        if (isset($headers['X-Powered-By'])){
-            if (is_array($headers['X-Powered-By']))
-                return array_pop($headers['X-Powered-By']);
-            else
-                return $headers['X-Powered-By'];
+    //Returns the contents of the title tag
+    function headings($level = 0){
+        if ($level != 0){
+            return($this->getTags('h' . $level));
         }
-        else
-            return '';
-    }
-
-    //Returns the server type (i.e. Apache)
-    function serverType(){
-        $headers = $this->getHeaders();
-        if (isset($headers['Server'])){
-            if (is_array($headers['Server']))
-                return array_pop($headers['Server']);
-            else
-                return $headers['Server'];
+        else{
+            //Get the h1-h7 tags
+            $headings[1] = $this->getTags('h1');
+            $headings[2] = $this->getTags('h2');
+            $headings[3] = $this->getTags('h3');
+            $headings[4] = $this->getTags('h4');
+            $headings[5] = $this->getTags('h5');
+            $headings[6] = $this->getTags('h6');
+            $headings[7] = $this->getTags('h7');
+            //Return the array of headings
+            return $headings;
         }
-        else
-            return '';
     }
 
+    //Returns the contents of the title tag
+    function titleTag(){
+        return($this->getTags('title'));
+    }
 
 }
 ?>
