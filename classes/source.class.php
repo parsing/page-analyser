@@ -25,8 +25,9 @@ class Source implements IReport{
             );
 
     //Object variables
-        private $url;    //The URL to be fetched
-        private $source; //The source of the page
+        private $url;       //The URL to be fetched
+        private $source;    //The source of the page
+        private $curlinfo;  //The info returned by cURL
 
 
     function __construct($url){
@@ -47,6 +48,9 @@ class Source implements IReport{
     }
 
 //==============================================================================
+    function getInfo(){
+        return $this->curlinfo;
+    }
 
     function getUrl(){
         return $this->url;
@@ -79,14 +83,14 @@ class Source implements IReport{
 
         //Execute the request and return the response (the source code)
             $source = curl_exec($site);
-            $info   = curl_getinfo($site);
+            $this->curlinfo   = curl_getinfo($site);
                 //If the response code is good, return the source
-                    if($info['http_code']==200){
+                    if($this->curlinfo['http_code']==200){
                         return $source;
                     }
                 //Otherwise, return the response code
                     else{
-                        throw new Exception("Unable to reach the page",$info['http_code']);
+                        throw new Exception("Unable to reach the page",$this->curlinfo['http_code']);
                     }
     }
 

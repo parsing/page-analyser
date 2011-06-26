@@ -12,7 +12,7 @@
 
     $report = new SiteReport($url);
 
-    print_r( $report->getHtmlReport()->doctype()) ;
+    echo(nl2br(print_r(( $report->getServerReport()->getUrlReport()->getWhois()),true))) ;
 
 ?>
 </body>
