@@ -130,6 +130,27 @@ class HtmlReport implements IReport{
 
 //==============================================================================
 
+    //Returns the URL of the favicon
+    function favicon(){
+        //Check if there is a favicon link on the page
+            if (preg_match( "/\<[\s]*link[^\>]*rel[\s]*=[\"'][\s]*(shortcut)? icon[\s]*[\"'][^\>]*\>/i", $this->source, $results)){
+                //Retrieve the href part of the link
+                    preg_match( "/\<[\s]*link[^\>]*href[\s]*=[\"'](.*)[\"'][^\>]*\>/i", $results[0], $favicon);
+
+                //Return the favicon URL
+                    return($favicon[1]);
+            }
+            if (preg_match( "/\<[\s]*link[^\>]*rel[\s]*=[\"'][\s]*icon[\s]*[\"'][^\>]*\>/i", $this->source, $results)){
+                //Retrieve the href part of the link
+                    preg_match( "/\<[\s]*link[^\>]*href[\s]*=[\"'](.*)[\"'][^\>]*\>/i", $results[0], $favicon);
+
+                //Return the favicon URL
+                    return($favicon[1]);
+            }
+            else
+                return false; //If no favicon was found
+    }
+
     //Return the URLs of the stylesheets linked in the document
     function stylesheets(){
         $stylesheets = array();
