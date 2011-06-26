@@ -75,11 +75,38 @@ class HtmlReport implements IReport{
         }
     }
 
+    //Returns an array containing the link tags
+    function linkTags($filterrel=""){
+        //Use DOMDocument to load the source and find link tags
+        $dom = new DOMDocument();
+        $dom->loadHTML($this->source);
+
+        //Create an array with the tags and their information
+        $linktags = array();
+        $raw_tags = $dom->getElementsByTagName("link");
+        foreach($raw_tags as $tag){
+            $charset    = $tag->getAttribute("charset");
+            $href       = $tag->getAttribute("href");
+            $hreflang   = $tag->getAttribute("hreflang");
+            $rel        = $tag->getAttribute("rel");
+            $media      = $tag->getAttribute("media");
+
+            //Only add the tag to the array if it matches the given rel attribute
+            //If there is no given rel attribute, add them all
+            if ($filterrel=="" || $rel == $filterrel){
+                //Push the tag in the array
+                $newtag = array('charset' => $charset, 'href' => $href, 'hreflang' => $hreflang, 'rel' => $rel, 'media' => $media);
+                array_push($linktags, $newtag);
+            }
+        }
+        return $linktags;
+    }
+
     //Returns an array containing the meta tags
     function metaTags(){
         //Use DOMDocument to load the source and find meta tags
         $dom = new DOMDocument();
-        $dom->loadHTML($source);
+        $dom->loadHTML($this->source);
 
         //Create an array with the tags and their information
         $metatags = array();
@@ -101,5 +128,22 @@ class HtmlReport implements IReport{
         return($this->getTags('title'));
     }
 
+//==============================================================================
+
+    //Return the URLs of the stylesheets linked in the document
+    function stylesheets(){
+        $stylesheets = array();
+
+        //Retrieve the link rel=stylesheet tags
+        $linktags = $this->linkTags("stylesheet");
+
+        foreach($linktags as $linktag){
+            //Merge the stylesheet URL and media then push them in the stylesheets array
+            $stylesheet = array($linktag['href'],$linktag['media']);
+            array_push($stylesheets,$stylesheet);
+        }
+
+        return $stylesheets;
+    }
 }
 ?>
