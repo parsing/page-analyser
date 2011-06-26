@@ -44,6 +44,11 @@ class UrlReport implements IReport{
 	return( $urlinfo['host'] );
     }
 
+    //Returns the IP associated to the domain
+    function getDomainIp(){
+        return gethostbyname($this->getDomain());
+    }
+
 
     //Returns the depth of the requested page
     function pageDepth(){
