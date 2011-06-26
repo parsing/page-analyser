@@ -134,15 +134,30 @@ class HtmlReport implements IReport{
     function stylesheets(){
         $stylesheets = array();
 
-        //Retrieve the link rel=stylesheet tags
-        $linktags = $this->linkTags("stylesheet");
+        //Retrieve the sitesheets in <link> tags
 
-        foreach($linktags as $linktag){
-            //Merge the stylesheet URL and media then push them in the stylesheets array
-            $stylesheet = array($linktag['href'],$linktag['media']);
-            array_push($stylesheets,$stylesheet);
-        }
+            //Retrieve the link rel=stylesheet tags
+            $linktags = $this->linkTags("stylesheet");
 
+            foreach($linktags as $linktag){
+                //Merge the stylesheet URL and media then push them in the stylesheets array
+                $stylesheet = array('href'=>$linktag['href'],'media'=>$linktag['media']);
+                array_push($stylesheets,$stylesheet);
+            }
+
+
+        //Retrieve the embedded stylesheets (using @import)
+
+            //Find the import URLs using a regular expression
+                $pattern = '/@import\s*url\([\'\"]([^\"\']*)[\'\"]\)/i';//Matches @import url('...')
+                preg_match_all($pattern,$this->source,$matches);
+
+                //Push all matches to the array
+                foreach($matches[1] as $match){
+                    array_push($stylesheets, array('href'=>$match,'media'=>'@import'));
+                }
+
+        //Return the stylesheets
         return $stylesheets;
     }
 }
