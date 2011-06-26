@@ -29,7 +29,7 @@ class HtmlReport implements IReport{
 //==============================================================================
 
     //Returns an array with all the occurences of a tag in the source
-    private function getTags($tag){
+    private function getTags($tag,$attribute=""){
             //Use DOMDocument to load the source and find tags
             $dom = new DOMDocument();
             $dom->loadHTML($this->source);
@@ -38,7 +38,14 @@ class HtmlReport implements IReport{
             $tags = array();
             $raw_tags = $dom->getElementsByTagName($tag);
             foreach($raw_tags as $tag){
-                    $text = $tag->nodeValue;
+                //If $attribute is empty, return the node's content
+                    if ( $attribute == "" ){
+                        $text = $tag->nodeValue;
+                    }
+                //If $attribute is set, return that attribute
+                    else{
+                        $text = $tag->getAttribute($attribute);
+                    }
                     //Push the tag in the array
                     array_push($tags, $text);
             }
@@ -149,6 +156,18 @@ class HtmlReport implements IReport{
             }
             else
                 return false; //If no favicon was found
+    }
+
+    //Returns the frames and their source
+    function frames(){
+        $frames = $this->getTags('frame','src');
+        return $frames;
+    }
+
+    //Returns the iframes and their source
+    function iframes(){
+        $iframes = $this->getTags('iframe','src');
+        return $iframes;
     }
 
     //Return the URLs of the stylesheets linked in the document
