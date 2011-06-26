@@ -160,5 +160,13 @@ class HtmlReport implements IReport{
         //Return the stylesheets
         return $stylesheets;
     }
+
+//COUNT ========================================================================
+
+    //Counts the occurences of inline style attributes
+    function countStyleAttributes(){
+        return(preg_match_all( "/style\s*=/i", $this->source));
+    }
+
 }
 ?>
