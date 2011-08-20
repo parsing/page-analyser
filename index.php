@@ -8,12 +8,12 @@
 <?php
     require_once('classes/report.class.php');
 
-    $url = 'http://nicolasbouliane.com';
+    $url = 'http://www.globaltransitinc.com';
 
     $report = new SiteReport($url);
 
-    echo(nl2br(print_r(( $report->getServerReport()->getUrlReport()->getWhois()),true))) ;
-
+    $output = $report->getServerReport()->getHeaders();
+    echo(nl2br(print_r($output,true))) ;
 ?>
 </body>
 </html>
